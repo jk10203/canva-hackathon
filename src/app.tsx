@@ -18,7 +18,7 @@ export const App = () => {
           then close and reopen the app in the editor to preview the changes.
         </Text>
         <Button variant="primary" onClick={onClick} stretch>
-          Do something cool WOAH
+          Do something cool :D
         </Button>
       </Rows>
     </div>
