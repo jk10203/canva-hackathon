@@ -2,6 +2,8 @@ import { Button, Rows, Text } from "@canva/app-ui-kit";
 import { addNativeElement } from "@canva/design";
 import styles from "styles/components.css";
 
+
+// We can get rid of this one, it should just route to one of the other components
 export const App = () => {
   const onClick = () => {
     addNativeElement({
