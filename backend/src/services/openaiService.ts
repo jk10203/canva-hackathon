@@ -31,8 +31,7 @@ export const processImageWithOpenAI = async (imageBuffer: Buffer) => {
   return generateAccessibilitySuggestions(messageContent);};
 
 const generateAccessibilitySuggestions = (analysisResult: string) => {
-    // Parse the analysis result and generate suggestions
-    // Assuming the analysisResult is a string containing suggestions separated by new lines
+    // Parse the analysis result and generate suggestions, we're assuming it splits properly by newlines
     const suggestions = analysisResult.split('\n').filter(Boolean);
   
     return suggestions;
