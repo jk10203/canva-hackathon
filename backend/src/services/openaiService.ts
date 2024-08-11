@@ -1,39 +1,62 @@
-import { OpenAI } from 'openai';
+import axios from 'axios';
 import * as dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
-const openai = new OpenAI();
+const apiKey = process.env.OPENAI_API_KEY;
 
-// Function to process the image and get accessibility suggestions from GPT-4
-export const processImageWithOpenAI = async (imageBuffer: Buffer) => {
-  // Convert image buffer to base64 string
-  const imageBase64 = imageBuffer.toString('base64');
-
-  // Prompt for GPT-4 to analyze the image (example prompt, since direct image analysis is not supported)
-  const prompt = `Analyze the following image data and provide accessibility suggestions: ${imageBase64}`;
-
-  const response = await openai.chat.completions.create ({
+export const processImageWithOpenAI = async (base64Image: string, imageType: string) => {
+  const payload = {
     model: 'gpt-4o-mini',
     messages: [
-      { role: 'system', content: 'You are an assistant that helps with image accessibility.' },
-      { role: 'user', content: prompt }
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: 'You are an accessibility design assistant. Analyze the following image and provide at least three accessibility suggestions, each on a new line.',
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: `data:${imageType};base64,${base64Image}`,
+            },
+          },
+        ],
+      },
     ],
     max_tokens: 500,
-  });
+  };
 
-  const messageContent = response.choices[0]?.message?.content;
-  if (!messageContent) {
-    throw new Error('Failed to get a valid response from OpenAI');
+  try {
+    const response = await axios.post('https://api.openai.com/v1/chat/completions', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+    });
+
+    const messageContent = response.data.choices[0]?.message?.content;
+    if (!messageContent) {
+      throw new Error('Failed to get a valid response from OpenAI');
+    }
+
+    return generateAccessibilitySuggestions(messageContent);
+
+  } catch (error) {
+    console.error('Error processing image:', error);
+    throw error;
   }
-
-  return generateAccessibilitySuggestions(messageContent);};
+};
 
 const generateAccessibilitySuggestions = (analysisResult: string) => {
-    // Parse the analysis result and generate suggestions
-    // Assuming the analysisResult is a string containing suggestions separated by new lines
-    const suggestions = analysisResult.split('\n').filter(Boolean);
-  
-    return suggestions;
+  // Split the suggestions by newline and filter out empty lines
+  const suggestions = analysisResult.split('\n').filter(suggestion => suggestion.trim().length > 0);
+
+  // Make sure there are at least three suggestions
+  if (suggestions.length < 3) {
+    throw new Error('GPT-4 did not return at least three suggestions');
+  }
+
+  return suggestions;
 };

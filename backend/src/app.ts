@@ -1,14 +1,15 @@
 import express from 'express';
-import multer from 'multer';
+import cors from 'cors';
 import { config } from 'dotenv';
 import { processImage } from './controllers/imageController';
 
 config(); // Load environment variables
 
 const app = express();
-const upload = multer({ storage: multer.memoryStorage() });
 
+app.use(cors()); // Allow all origins
 app.use(express.json());
-app.post('/process-image-url', upload.single('file'), processImage);
+
+app.post('/process-image', processImage); // Updated to POST and handle file upload
 
 export default app;
