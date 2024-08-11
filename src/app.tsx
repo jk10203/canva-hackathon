@@ -31,8 +31,9 @@ export const App = () => {
       });
 
       // send the URL to your backend using fetch
-      // let suggestRes = await fetchSuggestions(response);
-      setExportResponse(response); //change to suggestRes
+      let suggestRes = await fetchSuggestions(response);
+      setExportResponse(suggestRes);
+      // setExportResponse(response); //change to suggestRes
     } catch (error) {
       // add actual error handling
       console.log(error);
