@@ -10,7 +10,8 @@ import type { ExportResponse } from "@canva/design";
 import { requestExport } from "@canva/design";
 import { useState } from "react";
 import styles from "styles/components.css";
-import { fetchSuggestions, urlToFile } from "./Services/api";
+import { fetchSuggestions} from "./Services/api";
+import { extractFileInfo } from "./Services/fileHandler";
 
 export const App = () => {
   const [state, setState] = useState<"exporting" | "idle">("idle");
@@ -30,28 +31,8 @@ export const App = () => {
         ],
       });
 
-      //extracting url and title
-      const canvaImgUrl = response['exportBlobs'][0]['url'];
-      const canvaTitle = response['title'];
-      //extracting the file extension from the URL
-      const extensionMatch = canvaImgUrl.match(/\.(png|jpg|jpeg)$/i);
-      const extension = extensionMatch ? extensionMatch[1] : 'png'; // default to PNG if not found
-      let mimeString: string = 'image/png'; //default is png
-      switch (extension){
-        case 'png':{
-          mimeString = 'image/png';
-        }
-        case 'jpg':{
-          mimeString = 'image/jpg';
-        }
-      }
-      //making sure url, title, and mime are correct
-      console.log("Url, Title, MT: ")
-      console.log(canvaImgUrl);
-      console.log(canvaTitle);
-      console.log(mimeString);
-      //getting file format
-      let imageFile = await urlToFile(canvaImgUrl, canvaTitle, mimeString);
+      //getting file format from canva response
+      let imageFile = await extractFileInfo(response);
       //send file to backend
       let suggestRes = await fetchSuggestions(imageFile);
       console.log("suggestRes: ");

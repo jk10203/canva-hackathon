@@ -1,10 +1,5 @@
 const API_BASE_URL = 'http://localhost:3001';
 
-export const urlToFile = async (url, filename, mimeType) =>{
-    let blob = await fetch(url).then(r => r.blob()); //get blob from file url
-    return new File([blob], filename, { type: mimeType });
-}
-
 export const fetchSuggestions = async (imageFile: File) => {
     try {
         const formData = new FormData();
