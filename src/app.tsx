@@ -33,17 +33,22 @@ export const App = () => {
           "JPG",
         ],
       });
-
-      //getting file format from canva response
-      let imageFile = await extractFileInfo(response);
-      //send file to backend
-      let suggestRes = await fetchSuggestions(imageFile);
-      console.log("suggestRes: ");
-      console.log(suggestRes);
-      //splitting up / formatting suggestions
-      setSuggestions(suggestRes);
-      setState("exported");
-      setExportResponse(suggestRes); 
+      if (response.status === "COMPLETED") {
+        //getting file format from canva response
+        let imageFile = await extractFileInfo(response);
+        //send file to backend
+        let suggestRes = await fetchSuggestions(imageFile);
+        console.log("suggestRes: ");
+        console.log(suggestRes);
+        //splitting up / formatting suggestions
+        setSuggestions(suggestRes);
+        setState("exported");
+        setExportResponse(suggestRes); 
+      } else {
+        setState("idle");
+        console.log("The user exited the export flow.");
+        console.log(response); // => { status: "ABORTED" }
+      }
 
     } catch (error) {
       // add actual error handling
@@ -166,14 +171,6 @@ export const App = () => {
                 </Column>
               </Columns>
           </div>
-
-          // <FormField
-          //   label="Your WCAG suggestions: "
-          //   value={JSON.stringify(exportResponse, null, 2)}
-          //   control={(props) => (
-          //     <MultilineInput {...props} maxRows={7} autoGrow readOnly />
-          //   )}
-          // />
         )}
 
         <Button variant="primary" onClick={exportDocument} loading={state === "exporting"} stretch>
