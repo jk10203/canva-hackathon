@@ -89,7 +89,7 @@ export const App = () => {
             </Alert>
           </>
         )}
-        {exportResponse && (
+        {exportResponse && state == "exported" && (
           <div>
             <Columns
               align="start"
