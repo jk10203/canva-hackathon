@@ -36,24 +36,36 @@ export const processImageWithOpenAI = async (base64Image: string, imageType: str
       },
     });
 
-    const messageContent = response.data.choices[0]?.message?.content;
-    if (!messageContent) {
+    const choices = response.data.choices;
+    if (!choices || choices.length === 0) {
       throw new Error('Failed to get a valid response from OpenAI');
+    }
+
+    const messageContent = choices[0].message.content;
+    if (!messageContent) {
+      throw new Error('Response does not contain content');
     }
 
     return generateAccessibilitySuggestions(messageContent);
 
   } catch (error) {
-    console.error('Error processing image:', error);
-    throw error;
+    if (error instanceof Error) {
+      //'error' is an instance of Error
+      console.error('Error processing image:', error.message);
+  
+      if (axios.isAxiosError(error)) {
+        console.error('Error details:', error.response?.data);
+      }
+    } else {
+      console.error('Unexpected error', error);
+    }
+    throw error; // Re-throw the error if needed
   }
 };
 
 const generateAccessibilitySuggestions = (analysisResult: string) => {
-  // Split the suggestions by newline and filter out empty lines
   const suggestions = analysisResult.split('\n').filter(suggestion => suggestion.trim().length > 0);
 
-  // Make sure there are at least three suggestions
   if (suggestions.length < 3) {
     throw new Error('GPT-4 did not return at least three suggestions');
   }
