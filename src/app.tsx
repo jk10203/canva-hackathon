@@ -89,7 +89,7 @@ export const App = () => {
             </Alert>
           </>
         )}
-        {exportResponse && (
+        {exportResponse && state == "exported" && (
           <div>
             <Columns
               align="start"
@@ -121,7 +121,7 @@ export const App = () => {
               </Columns>
 
               <br></br>
-              <Box background="page">
+              <Box background="surface">
                 <Text
                   size="xsmall"
                 >
