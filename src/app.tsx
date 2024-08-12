@@ -121,7 +121,7 @@ export const App = () => {
               </Columns>
 
               <br></br>
-              <Box background="page">
+              <Box background="surface">
                 <Text
                   size="xsmall"
                 >
